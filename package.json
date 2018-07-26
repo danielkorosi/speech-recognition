@@ -1,0 +1,19 @@
+{
+  "name": "speech_text",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/language": "^1.2.0",
+    "@google-cloud/speech": "^2.0.0",
+    "@google-cloud/storage": "^1.7.0",
+    "@grpc/proto-loader": "^0.3.0",
+    "express": "^4.16.3",
+    "node-record-lpcm16": "^0.3.0"
+  }
+}
