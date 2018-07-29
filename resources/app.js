@@ -72,8 +72,12 @@ function addSearchButton () {
 }
 
 function addTranscript (text) {
+    let transcriptTitle = document.createElement('div');
+    transcriptTitle.innerHTML = 'Detected keywords: ';
+    transcriptWrapper.appendChild(transcriptTitle);
+
     transcriptHtmlElement = document.createElement('div');
-    transcriptHtmlElement.innerHTML = text;
+    transcriptHtmlElement.innerHTML = text.join(' ');
     transcriptWrapper.appendChild(transcriptHtmlElement);
     searchButton.disabled = false;
 }
@@ -94,7 +98,7 @@ function setRecording() {
         if (request.readyState === 4 && request.status === 200) {
             console.log('setrecord2');
             if (request.response !== 'recording') {
-                transcript = JSON.parse(request.response).join(' ');
+                transcript = JSON.parse(request.response);
                 console.log(transcript);
                 addTranscript(transcript);
             }

@@ -3,20 +3,36 @@
 <head>
     <meta charset="utf-8">
     <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <link href="resources/style.css" rel="stylesheet">
 </head>
 <body>
-    <div class="">
-        <select class="select" name="sourceLang" id="source-lang">
-        </select>
-        <select class="select" name="targetLang" id="target-lang">
-        </select>
+    <p class="title">Speech to text recognition with Babelnet search</p>
+    <div class="selection">
+        <div class="">
+            <span class="">
+                Source language
+            </span>
+            <span>
+                <select class="select" name="sourceLang" id="source-lang">
+                </select>
+            </span>
+        </div>
+        <div class="">
+            <span class="">
+                Target language
+            </span>
+            <span>
+                <select class="select" name="targetLang" id="target-lang">
+                </select>
+            </span>
+        </div>
     </div>
 
     <div class="buttons">
         <button class="button record-button">
         </button>
-        <button class="search-button" disabled>
+        <button class="button search-button" disabled>
             Search
         </button>
     </div>
