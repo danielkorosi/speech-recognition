@@ -1,4 +1,4 @@
-.title{
+.main-title{
     text-align: center;
     font-size: 32px;
     font-weight: bold;
@@ -6,6 +6,7 @@
 
 body {
     font-family: 'Ubuntu', sans-serif;
+    margin: 10px;
 }
 
 .button {
@@ -23,6 +24,10 @@ body {
     opacity: 50%;
 }
 
+.button:disabled {
+  background: #ccc;
+}
+
 .buttons {
     display: flex;
     justify-content: center;
@@ -31,4 +36,20 @@ body {
 .selection {
     display: flex;
     justify-content: space-evenly;
+}
+
+.title {
+    margin: 16px 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.content {
+    margin: 10px 16px;
+    font-style: italic;
+}
+
+.result-name {
+    font-size: 20px;
+    font-weight: bold;
 }
