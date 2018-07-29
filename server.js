@@ -18,15 +18,11 @@ const speech = require('@google-cloud/speech');
 const speechClient = new speech.SpeechClient();
 const languageClient = new language.LanguageServiceClient();
 
-const encoding = 'LINEAR16';
-const sampleRateHertz = 16000;
-const languageCode = 'en-US';
-
-const request = {
+let request = {
     config: {
-        encoding: encoding,
-        sampleRateHertz: sampleRateHertz,
-        languageCode: languageCode,
+        encoding: 'LINEAR16',
+        sampleRateHertz: 16000,
+        languageCode: 'en',
     },
     interimResults: false, // If you want interim results, set this to true
 };
@@ -45,7 +41,7 @@ function recordStream () {
 );
     record
     .start({
-        sampleRateHertz: sampleRateHertz,
+        sampleRateHertz: 16000,
         threshold: 0,
         // Other options, see https://www.npmjs.com/package/node-record-lpcm16#options
         verbose: false,
@@ -68,6 +64,8 @@ app.post('/record', function(req, res) {
         res.send(audioTranscript);
     } else {
         console.log('start');
+        request.config.languageCode = req.body.languageCode.toLowerCase();
+        console.log(request);
         recordStream();
         res.send('recording');
     }
