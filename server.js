@@ -28,17 +28,17 @@ let request = {
 };
 
 let audioTranscript = [];
-
+let fragment = '';
 function recordStream () {
+    audioTranscript = [];
     const recognizeStream = speechClient
     .streamingRecognize(request)
     .on('error', console.error)
     .on('data', data => {
-        let fragment = data.results[0] && data.results[0].alternatives[0] ? data.results[0].alternatives[0].transcript : null;
+        fragment = data.results[0] && data.results[0].alternatives[0] ? data.results[0].alternatives[0].transcript : null;
         console.log(fragment);
         audioTranscript.push(fragment);
-    }
-);
+    });
     record
     .start({
         sampleRateHertz: 16000,

@@ -1,17 +1,20 @@
 'use strict';
 
 let transcriptWrapper = document.querySelector('.transcript-wrapper');
-let startNow = 'Start now';
+let recordNow = 'Record now';
+let recordAgain = 'Record again';
 let stop = 'Stop';
 let buttons = document.querySelector('.buttons');
 let recordButton = document.querySelector('.record-button');
-recordButton.innerHTML = startNow;
+recordButton.innerHTML = recordNow;
 let sourceLang = document.querySelector('#source-lang');
 let targetLang = document.querySelector('#target-lang');
-let transcriptHtmlElement = null;
 let searchButton = document.querySelector('.search-button');
-let findingsElement = document.querySelector('.findings');
-let transcript;
+// let findingsElement = document.querySelector('.findings');
+let findingsContent = document.querySelector('.findings-content');
+// let findingsTitle = document.querySelector('.findings-title');
+let transcriptTitle = document.querySelector('.transcript-title');
+let transcriptHtmlElement = document.querySelector('.transcript-result');
 const babelKey = '13d7839c-ef5d-40fd-aa70-71d21f06181f';
 
 let languages = [
@@ -72,21 +75,20 @@ function addSearchButton () {
 }
 
 function addTranscript (text) {
-    let transcriptTitle = document.createElement('div');
-    transcriptTitle.innerHTML = 'Detected keywords: ';
-    transcriptWrapper.appendChild(transcriptTitle);
-
-    transcriptHtmlElement = document.createElement('div');
+    // transcriptHtmlElement.innerHTML = '';
     transcriptHtmlElement.innerHTML = text.join(' ');
-    transcriptWrapper.appendChild(transcriptHtmlElement);
+    transcriptTitle.innerHTML = 'Detected keywords: ';
     searchButton.disabled = false;
 }
 let message = {
     recording: false,
     languageCode: ''
 }
+let transcript = '';
+
 function setRecording() {
-    recordButton.innerHTML = recordButton.innerHTML === startNow ? stop : startNow;
+    recordButton.innerHTML = recordButton.innerHTML === recordNow || recordButton.innerHTML === recordAgain ? stop : recordAgain;
+    transcriptHtmlElement.innerHTML = '';
     let request = new XMLHttpRequest();
     request.open('POST', 'http://localhost:3000/record', true);
     request.setRequestHeader('Content-Type', 'application/json');
@@ -98,6 +100,7 @@ function setRecording() {
         if (request.readyState === 4 && request.status === 200) {
             console.log('setrecord2');
             if (request.response !== 'recording') {
+                transcript = '';
                 transcript = JSON.parse(request.response);
                 console.log(transcript);
                 addTranscript(transcript);
@@ -107,6 +110,7 @@ function setRecording() {
 }
 
 function getEntities() {
+    searchButton.disabled = true;
     let request = new XMLHttpRequest();
     request.open('GET', 'http://localhost:3000/entities', true);
     request.send();
@@ -136,13 +140,14 @@ function getSenses (word) {
 }
 
 function addFindings (word, response) {
-    let searchKeyword = document.createElement('div');
-    searchKeyword.innerHTML = word;
-    findingsElement.appendChild(searchKeyword)
+    findingsContent.remove();
+    // findingsTitle.innerHTML = null;
+    // findingsTitle.innerHTML = word;
+    // findingsElement.appendChild(findingsTitle)
     response.forEach(el => {
         let resultItem = document.createElement('div');
         resultItem.innerHTML = el.properties.fullLemma
-        findingsElement.appendChild(resultItem)
+        findingsContent.appendChild(resultItem)
     });
 }
 
