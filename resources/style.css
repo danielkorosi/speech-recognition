@@ -1,0 +1,10 @@
+.record-button {
+    padding: 10px;
+    border: 2px solid black;
+    width: 100px;
+    hover:
+}
+
+.record-button:hover {
+    background-color: red;
+}
