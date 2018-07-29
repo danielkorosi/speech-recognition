@@ -1,13 +1,18 @@
 'use strict';
 
 
-let dataDisplayed = document.querySelector('.transcript');
+let transcriptWrapper = document.querySelector('.transcript-wrapper');
 let startNow = 'Start now';
 let stop = 'Stop';
+let buttons = document.querySelector('.buttons');
 let recordButton = document.querySelector('.record-button');
 recordButton.innerHTML = startNow;
 let sourceLang = document.querySelector('#source-lang');
 let targetLang = document.querySelector('#target-lang');
+let transcriptHtmlElement = null;
+let searchButton = document.querySelector('.search-button');
+let transcript;
+const babelKey = '13d7839c-ef5d-40fd-aa70-71d21f06181f';
 
 let languages = [
     {
@@ -29,11 +34,9 @@ let languages = [
 ];
 
 function addData (response) {
-    console.log(response.entities);
-
     let dataItem = document.createElement('p')
     dataItem.innerHTML = response.entities[0].name;
-    dataDisplayed.appendChild(dataItem);
+    transcriptParent.appendChild(dataItem);
 }
 
 
@@ -48,10 +51,18 @@ function createLanguageOptions (selectTag) {
 createLanguageOptions(sourceLang);
 createLanguageOptions(targetLang);
 
-function addTranscript (transcript) {
-    let dataItem = document.createElement('p')
-    dataItem.innerHTML = transcript;
-    dataDisplayed.appendChild(dataItem);
+function addSearchButton () {
+    searchButton = document.createElement('div');
+    searchButton.innerHTML = 'Search';
+    searchButton.className = 'button'
+    buttons.appendChild(searchButton)
+}
+
+function addTranscript (text) {
+    transcriptHtmlElement = document.createElement('div');
+    transcriptHtmlElement.innerHTML = text;
+    transcriptWrapper.appendChild(transcriptHtmlElement);
+    searchButton.disabled = false;
 }
 
 let message = {
@@ -68,7 +79,7 @@ function setRecording() {
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             if (request.response !== 'recording') {
-                let transcript = JSON.parse(request.response).join(' ');
+                transcript = JSON.parse(request.response).join(' ');
                 console.log(transcript);
                 addTranscript(transcript);
             }
@@ -76,9 +87,25 @@ function setRecording() {
     }
 }
 
-function getSynsets () {
+function getEntities() {
     let request = new XMLHttpRequest();
-    request.open('GET', 'https://babelnet.io/v5/getSynsetIds?lemma=beatles&searchLang=EN&targetLang=DE&pos=NOUN&key=13d7839c-ef5d-40fd-aa70-71d21f06181f', true);
+    request.open('GET', 'http://localhost:3000/entities', true);
+    request.send();
+    request.onreadystatechange = () => {
+        if (request.readyState === 4 && request.status === 200) {
+            let entityNames = JSON.parse(request.response);
+            console.log(entityNames);
+            entityNames.forEach(entity => {
+                getSynsets(entity, 'EN', 'DE');
+            })
+
+        }
+    }
+}
+
+function getSynsets (text, searchLang, targetLang) {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'https://babelnet.io/v5/getSynsetIds?lemma=' + text + '&searchLang=' + searchLang + '&targetLang=' + targetLang + '&pos=NOUN&key=' + babelKey, true);
     request.send();
     request.onreadystatechange = () => {
         if (request.readyState === 4 && request.status === 200) {
@@ -93,7 +120,7 @@ function getSynsets () {
 
 function getInterpretation (id) {
     let request = new XMLHttpRequest();
-    request.open('GET', 'https://babelnet.io/v5/getSynset?id=' + id + '&targetLang=IT&targetLang=DE&key=13d7839c-ef5d-40fd-aa70-71d21f06181f', true);
+    request.open('GET', 'https://babelnet.io/v5/getSynset?id=' + id + '&targetLang=DE&key=' + babelKey, true);
     request.send();
     request.onreadystatechange = () => {
         if (request.readyState === 4 && request.status === 200) {
@@ -104,3 +131,4 @@ function getInterpretation (id) {
 }
 
 recordButton.addEventListener('click', setRecording);
+searchButton.addEventListener('click', getEntities);
