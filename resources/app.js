@@ -1,5 +1,6 @@
 'use strict';
 
+const babelKey = '13d7839c-ef5d-40fd-aa70-71d21f06181f';
 let transcriptWrapper = document.querySelector('.transcript-wrapper');
 let recordNow = 'Record now';
 let recordAgain = 'Record again';
@@ -14,7 +15,11 @@ let findingsContent = document.querySelector('.findings-result');
 let findingsTitle = document.querySelector('.findings-title');
 let transcriptTitle = document.querySelector('.transcript-title');
 let transcriptHtmlElement = document.querySelector('.transcript-result');
-const babelKey = '13d7839c-ef5d-40fd-aa70-71d21f06181f';
+let message = {
+    recording: false,
+    languageCode: ''
+}
+let transcript = '';
 
 function createLanguageOptions (selectTag) {
     languages.forEach(el => {
@@ -26,62 +31,6 @@ function createLanguageOptions (selectTag) {
 
 createLanguageOptions(sourceLang);
 createLanguageOptions(targetLang);
-
-function getSelectValueCode (element) {
-    let languageString = element.options[element.selectedIndex].value
-    let selectedLanguageCode;
-    languages.forEach(language => {
-        if (language.name === languageString) {
-            selectedLanguageCode = language.code;
-        }
-    })
-    return selectedLanguageCode;
-}
-
-function addSearchButton () {
-    searchButton = document.createElement('div');
-    searchButton.innerHTML = 'Search';
-    searchButton.className = 'button'
-    buttons.appendChild(searchButton)
-}
-
-function addTranscript (text) {
-    transcriptHtmlElement.innerHTML = text.join(' ');
-    transcriptTitle.innerHTML = 'Speech transcript: ';
-    searchButton.disabled = false;
-}
-let message = {
-    recording: false,
-    languageCode: ''
-}
-let transcript = '';
-
-function resetSearchState () {
-    findingsTitle.innerHTML = '';
-    findingsContent.innerHTML = '';
-    recordButton.innerHTML = recordButton.innerHTML === recordNow || recordButton.innerHTML === recordAgain ? stop : recordAgain;
-    transcriptHtmlElement.innerHTML = '';
-    searchButton.disabled = recordButton.innerHTML === stop;
-}
-function setRecording() {
-    resetSearchState();
-    let request = new XMLHttpRequest();
-    request.open('POST', 'http://localhost:3000/record', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    message.recording = message.recording === false ? true : false;
-    message.languageCode = getSelectValueCode(sourceLang);
-    request.send(JSON.stringify(message));
-    request.onreadystatechange = function () {
-        if (request.readyState === 4 && request.status === 200) {
-            if (request.response !== 'recording') {
-                transcript = '';
-                transcript = JSON.parse(request.response);
-                console.log(transcript);
-                addTranscript(transcript);
-            }
-        }
-    }
-}
 
 function getEntities() {
     searchButton.disabled = true;
@@ -107,6 +56,49 @@ function getSenses (word) {
         if (request.readyState === 4 && request.status === 200) {
             let response = JSON.parse(request.response);
             addFindings(word, response);
+        }
+    }
+}
+
+function getSelectValueCode (element) {
+    let languageString = element.options[element.selectedIndex].value
+    let selectedLanguageCode;
+    languages.forEach(language => {
+        if (language.name === languageString) {
+            selectedLanguageCode = language.code;
+        }
+    })
+    return selectedLanguageCode;
+}
+
+function addTranscript (text) {
+    transcriptHtmlElement.innerHTML = text.join(' ');
+    transcriptTitle.innerHTML = 'Speech transcript: ';
+    searchButton.disabled = false;
+}
+
+function resetSearchState () {
+    findingsTitle.innerHTML = '';
+    findingsContent.innerHTML = '';
+    recordButton.innerHTML = recordButton.innerHTML === recordNow || recordButton.innerHTML === recordAgain ? stop : recordAgain;
+    transcriptHtmlElement.innerHTML = '';
+    searchButton.disabled = recordButton.innerHTML === stop;
+}
+function setRecording() {
+    resetSearchState();
+    let request = new XMLHttpRequest();
+    request.open('POST', 'http://localhost:3000/record', true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    message.recording = message.recording === false ? true : false;
+    message.languageCode = getSelectValueCode(sourceLang);
+    request.send(JSON.stringify(message));
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            if (request.response !== 'recording') {
+                transcript = '';
+                transcript = JSON.parse(request.response);
+                addTranscript(transcript);
+            }
         }
     }
 }
